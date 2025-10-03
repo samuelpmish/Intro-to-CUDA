@@ -48,5 +48,3 @@ add_executable(cpu_reduction 03_parallel_reduction/cpu_reduction.cu)
 add_executable(gpu_reduction 03_parallel_reduction/gpu_reduction.cu)
 add_executable(gpu_reduction_shmem 03_parallel_reduction/gpu_reduction_shmem.cu)
 add_executable(gpu_reduction_thrust 03_parallel_reduction/gpu_reduction_thrust.cu)
-
-add_executable(scatter_gather scatter_gather.cu)

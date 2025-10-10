@@ -10,7 +10,7 @@ __global__ void saxpy(const float a, const float * x, float * y) {
 int main() {
 
     // we'll stick to powers of two so everything divides evenly
-    int n = 1 << 24;
+    int n = 1 << 22;
 
     int threads_per_block = 256;
     int blocks_per_grid = n / threads_per_block;

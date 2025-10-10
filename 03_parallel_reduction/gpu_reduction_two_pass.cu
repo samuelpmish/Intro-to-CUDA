@@ -7,14 +7,13 @@
 // |  ---  dx = π
 // ⌡  1+x²      
 //  0 
-__global__ void calculate_pi(int n, double * sum){
+__global__ void calculate_pi(int n, double * block_sum){
 
     // shared storage used to communicate between threads
     extern __shared__ double shmem[]; 
 
     auto f = [](double x) { return 4.0 / (1.0 + x * x); };
 
-    // calculate this thread's contribution to the integral
     double dx = 1.0 / n;
     int i = threadIdx.x + blockIdx.x * blockDim.x; 
     if (i < n) {
@@ -23,17 +22,40 @@ __global__ void calculate_pi(int n, double * sum){
     } else {
         shmem[threadIdx.x] = 0.0;
     }
+
     __syncthreads();
 
-    // 
-    // 
-    // TODO: perform local reduction in shared memory
-    // 
-    // 
+    for(int stride = blockDim.x / 2; stride > 0; stride /= 2) {
+        if (threadIdx.x < stride) {
+            shmem[threadIdx.x] += shmem[threadIdx.x + stride];
+        }
+        __syncthreads();
+    }
 
-    // elect one thread to atomically add the entire block's contribution 
     if (threadIdx.x == 0){
-        atomicAdd(sum, shmem[0]);
+        block_sum[blockIdx.x] = shmem[0];
+    }
+
+}
+
+// note: this kernel should only be called with 1 block! 
+__global__ void final_reduce(int n, double * block_sum, double * pi_approx) {
+
+    // shared storage used to communicate between threads
+    extern __shared__ double shmem[]; 
+
+    // first accumulate entries in registers
+    // TODO
+
+    // then write each thread's total to shmem
+    // TODO
+
+    // perform remaining reduction in shared memory as before
+    // TODO
+
+    // have one thread write out the result
+    if (threadIdx.x == 0){
+        *pi_approx = shmem[0];
     }
 
 }
@@ -43,16 +65,23 @@ int main() {
     static constexpr int n = 100'000'000;
     static constexpr double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862090;
 
+    int threads_per_block = 256;
+    int blocks_per_grid = (n + threads_per_block - 1) / threads_per_block;
+
     // allocate memory for the answer on the GPU, and initialize it to zero
     double * d_pi_approx;
     cudaMalloc(&d_pi_approx, sizeof(double));
+
+    // allocate memory for each block to write 1 value
+    double * d_storage;
+    cudaMalloc(&d_storage, blocks_per_grid * sizeof(double));
+
     cudaMemset(d_pi_approx, 0, sizeof(double));
 
-    int threads_per_block = 256;
-    int blocks_per_grid = (n + threads_per_block - 1) / threads_per_block;
     int shmem = sizeof(double) * threads_per_block;
     float time_ms = 1000.0f * time([&](){
-        calculate_pi<<< blocks_per_grid, threads_per_block, shmem >>>(n, d_pi_approx);
+        calculate_pi<<< blocks_per_grid, threads_per_block, shmem >>>(n, d_storage);
+        final_reduce<<< 1, 1024, 1024 * sizeof(double) >>>(blocks_per_grid, d_storage, d_pi_approx);
         cudaDeviceSynchronize();
     });
 

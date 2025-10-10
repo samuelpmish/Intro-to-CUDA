@@ -19,7 +19,8 @@ __global__ void calculate_pi(int n, double * sum) {
     int i = threadIdx.x + blockIdx.x * blockDim.x; 
     if (i < n) {
         double x = (i + 0.5) * dx;
-        (*sum) += f(x) * dx;
+        //(*sum) += f(x) * dx;
+        atomicAdd(sum, f(x) * dx);
     }
 }
 

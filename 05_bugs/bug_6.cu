@@ -14,8 +14,8 @@ __global__ void reduce(float * data, float * sum) {
   for(int stride = blockDim.x / 2; stride > 0; stride /= 2) {
     if (threadIdx.x < stride) {
       shmem[threadIdx.x] += shmem[threadIdx.x + stride];
+      __syncthreads();
     }
-    __syncthreads();
   }
 
   if (threadIdx.x == 0) {

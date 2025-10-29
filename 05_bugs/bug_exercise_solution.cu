@@ -49,7 +49,7 @@ int main() {
     cudaMalloc(&d_pi_approx, sizeof(double));
     cudaMemset(d_pi_approx, 0, sizeof(double));
 
-    int threads_per_block = 512;
+    int threads_per_block = 256;
     int blocks_per_grid = (n + threads_per_block - 1) / threads_per_block;
     int shmem = sizeof(double) * threads_per_block;
     float time_ms = 1000.0f * time([&](){

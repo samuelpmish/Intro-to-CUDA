@@ -36,18 +36,6 @@ int main() {
 
   auto on_boundary = [n](int i) { return (i == 0 || i == (n - 1)); };
 
-  std::vector<double> rhs(n * n * n, 1.0);
-  for (int k = 0; k < n; k++) {
-    for (int j = 0; j < n; j++) {
-      for (int i = 0; i < n; i++) {
-        int id = i + j * n + k * n * n;
-        if (on_boundary(i) && on_boundary(j) && on_boundary(k)) {
-          rhs[id] = 0;
-        } 
-      }
-    }
-  }
-
   auto A = [&](const gpu::vector & x){
     const gpu::vector Ax(x.size()); 
     span3D<double> Ax_3D(Ax.ptr, shape);
@@ -62,7 +50,11 @@ int main() {
     return Ax;
   };
   
-  gpu::vector b = rhs;//A(soln);
+  // solution = 0 on the boundary, and we 
+  // have a Dirac delta source on the interior
+  std::vector<double> rhs(n * n * n, 0.0);
+  rhs[(n / 2) * n * n + (n / 2) * n + (n / 2)] = 1.0;
+  gpu::vector b = rhs;
 
   gpu::vector x = cg(A, b, max_iterations, tolerance);
 

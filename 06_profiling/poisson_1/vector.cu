@@ -8,26 +8,6 @@
 
 namespace gpu {
 
-cudaStream_t default_stream = {0};
-cudaMemPool_t mempool;
-bool use_memory_pool = false;
-
-void custom_alloc(void ** p, uint64_t nbytes) {
-    if (use_memory_pool) {
-        cudaMallocAsync(p, nbytes, default_stream);
-    } else {
-        cudaMalloc(p, nbytes);
-    }
-}
-
-void custom_free(void * p) {
-    if (use_memory_pool) {
-        cudaFreeAsync(p, default_stream);
-    } else {
-        cudaFree(p);
-    }
-}
-
 vector::vector(uint32_t n) : sz{}, ptr{} { resize(n); }
 
 vector::vector(const vector & other) : sz{}, ptr{} {
@@ -54,23 +34,13 @@ vector& vector::operator=(const std::vector<double> & other) {
 
 void vector::resize(uint32_t new_sz) {
   if (sz != new_sz) {
-    if (ptr) { custom_free(ptr); }
-    if (new_sz > 0) { custom_alloc((void**)&ptr, sizeof(double) * new_sz); }
+    if (ptr) { cudaFree(ptr); }
+    if (new_sz > 0) { cudaMalloc(&ptr, sizeof(double) * new_sz); }
     sz = new_sz;
   }
 }
 
 uint32_t vector::size() const { return sz; }
-
-void vector::set_memory_pool(uint64_t bytes) {
-    if (bytes > 0) {
-        use_memory_pool = true;
-        cudaDeviceGetDefaultMemPool(&mempool, 0);
-        cudaMemPoolSetAttribute(mempool, cudaMemPoolAttrReleaseThreshold, &bytes);
-    } else {
-        use_memory_pool = false;
-    }
-}
 
 vector::~vector() { resize(0); }
 
@@ -90,6 +60,7 @@ vector operator+(const vector & u, const vector & v) {
     int threads_per_block = 256;
     int blocks = (u.sz + threads_per_block - 1) / threads_per_block;
     add<<< blocks, threads_per_block >>>(out.ptr, u.ptr, v.ptr, u.sz);
+    cudaDeviceSynchronize();
     return out;
 }
 
@@ -103,6 +74,7 @@ vector operator-(const vector & u, const vector & v) {
     int threads_per_block = 256;
     int blocks = (u.sz + threads_per_block - 1) / threads_per_block;
     sub<<< blocks, threads_per_block >>>(out.ptr, u.ptr, v.ptr, u.sz);
+    cudaDeviceSynchronize();
     return out;
 }
 
@@ -116,6 +88,7 @@ vector operator*(const vector & v, double s) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, s, v.sz);
+    cudaDeviceSynchronize();
     return out;
 }
 
@@ -124,6 +97,7 @@ vector operator*(double s, const vector & v) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, s, v.sz);
+    cudaDeviceSynchronize();
     return out;
 }
 
@@ -132,26 +106,21 @@ vector operator/(const vector & v, double s) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, 1.0 / s, v.sz);
+    cudaDeviceSynchronize();
     return out;
 }
 
 __global__ void axpby_kernel(double a, const double * x, double b, double * y, int n) {
-    int i = threadIdx.x + blockIdx.x * blockDim.x;
-    if (i < n) { y[i] = a * x[i] + b * y[i]; }
+    // TODO
 }
 
 void axpby(double a, const vector & x, double b, vector & y) {
-    int threads_per_block = 256;
-    int blocks = (y.sz + threads_per_block - 1) / threads_per_block;
-    axpby_kernel<<< blocks, threads_per_block >>>(a, x.ptr, b, y.ptr, y.sz);
-    cudaDeviceSynchronize();
+    // TODO
 }
 
 __global__ void dot_1(const double * u, const double * v, int n, double * block_sum){
 
-    using real_t = float;
-
-    extern __shared__ real_t shmem[]; 
+    extern __shared__ double shmem[]; 
 
     int i = threadIdx.x + blockIdx.x * blockDim.x; 
     if (i < n) {
@@ -211,21 +180,19 @@ double dot(const vector & u, const vector & v) {
     int shmem = sizeof(double) * threads_per_block;
 
     double * d_sum;
-    custom_alloc((void**)&d_sum, sizeof(double));
+    cudaMalloc(&d_sum, sizeof(double));
 
     double * d_block_sums;
-    custom_alloc((void**)&d_block_sums, sizeof(double) * blocks);
+    cudaMalloc(&d_block_sums, sizeof(double) * blocks);
 
     dot_1<<< blocks, threads_per_block, shmem >>>(u.ptr, v.ptr, u.sz, d_block_sums);
     dot_2<<< 1, threads_per_block, shmem >>>(blocks, d_block_sums, d_sum);
+    cudaDeviceSynchronize();
 
     double h_sum;
     cudaMemcpy(&h_sum, d_sum, sizeof(double), cudaMemcpyDeviceToHost);
 
-    custom_free(d_block_sums);
-    custom_free(d_sum);
-
     return h_sum;
 }
 
-} // namespace gpu
+}

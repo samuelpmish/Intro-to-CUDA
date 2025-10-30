@@ -36,8 +36,8 @@ int main() {
 
   int n = 256;
   int shape[3] = {n, n, n};
-  int max_iterations = 50;
-  double tolerance = 1.0e-5;
+  int max_iterations = 100;
+  double tolerance = 1.0e-2;
 
   gpu::vector::set_memory_pool(n * n * n * sizeof(double) * 8);
 
@@ -51,7 +51,6 @@ int main() {
     dim3 block{8, 8, 8};
     dim3 grid{n / block.x, n / block.y, n / block.z};
     laplace_operator<<< grid, block >>>(Ax_3D, x_3D);
-    //cudaDeviceSynchronize();
 
     return Ax;
   };

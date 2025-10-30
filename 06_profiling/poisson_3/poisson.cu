@@ -36,8 +36,8 @@ int main() {
 
   int n = 256;
   int shape[3] = {n, n, n};
-  int max_iterations = 50;
-  double tolerance = 1.0e-5;
+  int max_iterations = 100;
+  double tolerance = 1.0e-2;
 
   gpu::vector::set_memory_pool(n * n * n * sizeof(double) * 8);
 

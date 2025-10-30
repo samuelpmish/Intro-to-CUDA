@@ -17,7 +17,7 @@ VectorType cg(
   VectorType d = r;
   double delta = dot(r, r);
   double delta0 = delta;
-  nvtxRangePop();
+  nvtxRangePop(); // preamble
 
   int i = 0;
   while (i < imax && delta > ((epsilon * epsilon) * delta0)) {
@@ -26,11 +26,11 @@ VectorType cg(
     nvtxRangePushA("update solution");
     VectorType q = A(d);
     double alpha = delta / dot(d, q);
-    x = x + alpha * d;
+    axpby(alpha, d, 1.0, x);
     nvtxRangePop();
 
     nvtxRangePushA("update residual");
-    r = r - alpha * q;
+    axpby(-alpha, q, 1.0, r);
     nvtxRangePop();
 
     nvtxRangePushA("update search direction");
@@ -40,11 +40,11 @@ VectorType cg(
     std::cout << i << " " << delta << std::endl;
 
     double beta = delta / delta_old;
-    d = r + beta * d;
+    axpby(1.0, r, beta, d);
     i++;
-    nvtxRangePop();
+    nvtxRangePop(); // update search direction
 
-    nvtxRangePop();
+    nvtxRangePop(); // cg iteration
   }
 
   return x;

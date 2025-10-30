@@ -49,7 +49,7 @@ file(GLOB sources
   03_parallel_reduction/*.cu
   04_streams/*.cu
   05_bugs/*.cu
-  06_profiling/*.cu
+  06_profiling/unstructured_mesh/*.cu
 )
 
 foreach(filename ${sources})

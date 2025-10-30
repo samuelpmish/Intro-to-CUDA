@@ -10,6 +10,7 @@
 #include "binary_io.hpp"
 
 #include "timer.hpp"
+#include "flush_cache.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -135,8 +136,8 @@ void calculate_normals_gpu(const TriangleMesh & mesh) {
 
 int main() {
 
-  std::cout << "generating mesh ... ";
-  TriangleMesh mesh = icosphere(9);
+  std::cout << "generating mesh ... " << std::flush;
+  TriangleMesh mesh = icosphere(10);
   std::cout << "done" << std::endl;
   std::cout << "Mesh has " << mesh.vertices.size() << " vertices and ";
   std::cout << mesh.triangles.size() << " triangles" << std::endl << std::endl;
@@ -144,7 +145,10 @@ int main() {
   z_rotate_cpu(mesh);
   calculate_normals_cpu(mesh);
 
+  flush_cache();
   z_rotate_gpu(mesh);
+
+  flush_cache();
   calculate_normals_gpu(mesh);
 
   std::cout << std::endl << "randomizing mesh numbering ... ";
@@ -154,7 +158,10 @@ int main() {
   z_rotate_cpu(mesh);
   calculate_normals_cpu(mesh);
 
+  flush_cache();
   z_rotate_gpu(mesh);
+
+  flush_cache();
   calculate_normals_gpu(mesh);
 
 }

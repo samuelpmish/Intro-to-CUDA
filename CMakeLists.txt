@@ -60,19 +60,36 @@ endforeach()
 target_compile_options(host_device_annotations PUBLIC "--expt-relaxed-constexpr")
 target_compile_options(host_device_annotations PUBLIC "-extended-lambda")
 
-add_executable(conjugate_gradient_0 
-  06_profiling/conjugate_gradient_0/vector.cu
-  06_profiling/conjugate_gradient_0/poisson.cu
+add_executable(poisson_0
+  06_profiling/poisson_0/vector.cu
+  06_profiling/poisson_0/poisson.cu
+)
+target_link_libraries(poisson_0 PUBLIC CUDA::cusparse)
+
+add_executable(poisson_1
+  06_profiling/poisson_1/vector.cu
+  06_profiling/poisson_1/poisson.cu
+)
+target_link_libraries(poisson_1 PUBLIC CUDA::cusparse)
+
+add_executable(poisson_2
+  06_profiling/poisson_2/vector.cu
+  06_profiling/poisson_2/poisson.cu
 )
 
-add_executable(conjugate_gradient_1 
-  06_profiling/conjugate_gradient_1/vector.cu
-  06_profiling/conjugate_gradient_1/poisson.cu
+add_executable(poisson_3
+  06_profiling/poisson_3/vector.cu
+  06_profiling/poisson_3/poisson.cu
 )
 
-add_executable(conjugate_gradient_2 
-  06_profiling/conjugate_gradient_2/vector.cu
-  06_profiling/conjugate_gradient_2/poisson.cu
+add_executable(poisson_4
+  06_profiling/poisson_4/vector.cu
+  06_profiling/poisson_4/poisson.cu
+)
+
+add_executable(poisson_5
+  06_profiling/poisson_5/vector.cu
+  06_profiling/poisson_5/poisson.cu
 )
 
 add_executable(box_blur 06_profiling/box_blur/box_blur.cu)

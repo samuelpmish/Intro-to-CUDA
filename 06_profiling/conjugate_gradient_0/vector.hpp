@@ -16,6 +16,8 @@ namespace gpu {
 
     uint32_t size() const;
 
+    static void set_memory_pool(uint64_t bytes);
+
     uint32_t sz;
     double * ptr;
 
@@ -32,5 +34,8 @@ namespace gpu {
   vector operator*(const vector & v, double scale);
   vector operator*(double scale, const vector & v);
   vector operator/(const vector & v, double scale);
+
+  // y := a * x + b * y
+  void axpby(double a, const vector & x, double b, vector & v);
 
 }

@@ -1,16 +1,8 @@
-// annotate this file with NVTX ranges
-//
-// mark the following ranges:
-//  -the preamble (the part before the while loop)
-//  -the individual iterations
-//  -within each iteration, create 3 subranges:
-//    - the calculation of `d` up to the assigning new data to `x`
-//    - the residual update (r := ... )
-//    - updating the search direction (everything after the residual update)
-
 #pragma once
 
 #include <nvtx3/nvToolsExt.h>
+
+#include <iostream>
 
 // a direct translation of algorithm B2 from Shewchuk's 
 // "An Introduction to the Conjugate Gradient Method
@@ -22,30 +14,44 @@ VectorType cg(
   int imax, 
   double epsilon) {
 
+  nvtxRangePushA("preamble");
   VectorType x = b * 0.0;
   VectorType r = b;
   VectorType d = r;
   double delta = dot(r, r);
   double delta0 = delta;
+  nvtxRangePop();
 
   int i = 0;
   while (i < imax && delta > ((epsilon * epsilon) * delta0)) {
+    nvtxRangePushA("cg iteration");
+
+    nvtxRangePushA("update solution");
     VectorType q = A(d);
     double alpha = delta / dot(d, q);
     x = x + alpha * d;
+    nvtxRangePop();
 
+    nvtxRangePushA("update residual");
     if (i % 50 == 0) {
       r = b - A(x);
     } else {
       r = r - alpha * q;
     }
+    nvtxRangePop();
 
+    nvtxRangePushA("update search direction");
     double delta_old = delta;
     delta = dot(r, r);
+
+    std::cout << i << " " << delta << std::endl;
 
     double beta = delta / delta_old;
     d = r + beta * d;
     i++;
+    nvtxRangePop();
+
+    nvtxRangePop();
   }
 
   return x;

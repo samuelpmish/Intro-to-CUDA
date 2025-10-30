@@ -1,6 +1,11 @@
 #include "krylov.hpp"
+
 #include "span.hpp"
 #include "vector.hpp"
+
+#include "timer.hpp"
+
+#include <iostream>
 
 template < typename T >
 __global__ void laplace_operator(span3D<T> output, const span3D<T> input) {
@@ -34,10 +39,9 @@ int main() {
   int max_iterations = 50;
   double tolerance = 1.0e-5;
 
-  auto on_boundary = [n](int i) { return (i == 0 || i == (n - 1)); };
-
   auto A = [&](const gpu::vector & x){
-    const gpu::vector Ax(x.size()); 
+    gpu::vector Ax(x.size()); 
+
     span3D<double> Ax_3D(Ax.ptr, shape);
     span3D<double> x_3D(x.ptr, shape);
 
@@ -45,7 +49,6 @@ int main() {
     dim3 block{8, 8, 8};
     dim3 grid{n / block.x, n / block.y, n / block.z};
     laplace_operator<<< grid, block >>>(Ax_3D, x_3D);
-    cudaDeviceSynchronize();
 
     return Ax;
   };
@@ -56,6 +59,13 @@ int main() {
   rhs[(n / 2) * n * n + (n / 2) * n + (n / 2)] = 1.0;
   gpu::vector b = rhs;
 
+  timer stopwatch;
+
+  stopwatch.start();
   gpu::vector x = cg(A, b, max_iterations, tolerance);
+  cudaDeviceSynchronize();
+  stopwatch.stop();
+
+  std::cout << "finished in " << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
 
 }

@@ -2,6 +2,8 @@
 
 #include <nvtx3/nvToolsExt.h>
 
+#include <iostream>
+
 // a direct translation of algorithm B2 from Shewchuk's 
 // "An Introduction to the Conjugate Gradient Method
 //      Without the Agonizing Pain" edition 1¼
@@ -41,6 +43,8 @@ VectorType cg(
     nvtxRangePushA("update search direction");
     double delta_old = delta;
     delta = dot(r, r);
+
+    std::cout << i << " " << delta << std::endl;
 
     double beta = delta / delta_old;
     d = r + beta * d;

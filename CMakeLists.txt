@@ -30,7 +30,7 @@ find_package(CUDAToolkit)
 
 # this flag enables line of code associations 
 # from tools like compute-sanitizer
-#add_compile_options("-lineinfo") 
+add_compile_options("-lineinfo") 
 
 # these flags enable generation of detailed reports of 
 # where compilation time in spent in each translation unit
@@ -60,7 +60,19 @@ endforeach()
 target_compile_options(host_device_annotations PUBLIC "--expt-relaxed-constexpr")
 target_compile_options(host_device_annotations PUBLIC "-extended-lambda")
 
-add_executable(conjugate_gradient 
-  06_profiling/conjugate_gradient/vector.cu
-  06_profiling/conjugate_gradient/poisson.cu
+add_executable(conjugate_gradient_0 
+  06_profiling/conjugate_gradient_0/vector.cu
+  06_profiling/conjugate_gradient_0/poisson.cu
 )
+
+add_executable(conjugate_gradient_1 
+  06_profiling/conjugate_gradient_1/vector.cu
+  06_profiling/conjugate_gradient_1/poisson.cu
+)
+
+add_executable(conjugate_gradient_2 
+  06_profiling/conjugate_gradient_2/vector.cu
+  06_profiling/conjugate_gradient_2/poisson.cu
+)
+
+add_executable(box_blur 06_profiling/box_blur/box_blur.cu)

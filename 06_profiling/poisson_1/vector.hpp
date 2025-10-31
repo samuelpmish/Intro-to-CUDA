@@ -35,7 +35,4 @@ namespace gpu {
   vector operator*(double scale, const vector & v);
   vector operator/(const vector & v, double scale);
 
-  // y := a * x + b * y
-  void axpby(double a, const vector & x, double b, vector & v);
-
 }

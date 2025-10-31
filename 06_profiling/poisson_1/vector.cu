@@ -110,14 +110,6 @@ vector operator/(const vector & v, double s) {
     return out;
 }
 
-__global__ void axpby_kernel(double a, const double * x, double b, double * y, int n) {
-    // TODO
-}
-
-void axpby(double a, const vector & x, double b, vector & y) {
-    // TODO
-}
-
 __global__ void dot_1(const double * u, const double * v, int n, double * block_sum){
 
     extern __shared__ double shmem[]; 

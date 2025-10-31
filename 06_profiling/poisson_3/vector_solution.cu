@@ -90,7 +90,6 @@ vector operator+(const vector & u, const vector & v) {
     int threads_per_block = 256;
     int blocks = (u.sz + threads_per_block - 1) / threads_per_block;
     add<<< blocks, threads_per_block >>>(out.ptr, u.ptr, v.ptr, u.sz);
-    cudaDeviceSynchronize();
     return out;
 }
 
@@ -104,7 +103,6 @@ vector operator-(const vector & u, const vector & v) {
     int threads_per_block = 256;
     int blocks = (u.sz + threads_per_block - 1) / threads_per_block;
     sub<<< blocks, threads_per_block >>>(out.ptr, u.ptr, v.ptr, u.sz);
-    cudaDeviceSynchronize();
     return out;
 }
 
@@ -118,7 +116,6 @@ vector operator*(const vector & v, double s) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, s, v.sz);
-    cudaDeviceSynchronize();
     return out;
 }
 
@@ -127,7 +124,6 @@ vector operator*(double s, const vector & v) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, s, v.sz);
-    cudaDeviceSynchronize();
     return out;
 }
 
@@ -136,8 +132,19 @@ vector operator/(const vector & v, double s) {
     int threads_per_block = 256;
     int blocks = (v.sz + threads_per_block - 1) / threads_per_block;
     scale<<< blocks, threads_per_block >>>(out.ptr, v.ptr, 1.0 / s, v.sz);
-    cudaDeviceSynchronize();
     return out;
+}
+
+__global__ void axpby_kernel(double a, const double * x, double b, double * y, int n) {
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    if (i < n) { y[i] = a * x[i] + b * y[i]; }
+}
+
+void axpby(double a, const vector & x, double b, vector & y) {
+    int threads_per_block = 256;
+    int blocks = (y.sz + threads_per_block - 1) / threads_per_block;
+    axpby_kernel<<< blocks, threads_per_block >>>(a, x.ptr, b, y.ptr, y.sz);
+    cudaDeviceSynchronize();
 }
 
 __global__ void dot_1(const double * u, const double * v, int n, double * block_sum){
@@ -209,7 +216,6 @@ double dot(const vector & u, const vector & v) {
 
     dot_1<<< blocks, threads_per_block, shmem >>>(u.ptr, v.ptr, u.sz, d_block_sums);
     dot_2<<< 1, threads_per_block, shmem >>>(blocks, d_block_sums, d_sum);
-    cudaDeviceSynchronize();
 
     double h_sum;
     cudaMemcpy(&h_sum, d_sum, sizeof(double), cudaMemcpyDeviceToHost);

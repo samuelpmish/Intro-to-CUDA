@@ -1,4 +1,4 @@
-#include "krylov.hpp"
+#include "cg.hpp"
 
 #include "span.hpp"
 #include "vector.hpp"
@@ -38,6 +38,8 @@ int main() {
   int shape[3] = {n, n, n};
   int max_iterations = 100;
   double tolerance = 1.0e-2;
+
+  gpu::vector::set_memory_pool(n * n * n * sizeof(double) * 8);
 
   auto A = [&](const gpu::vector & x){
     gpu::vector Ax(x.size()); 

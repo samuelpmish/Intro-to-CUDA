@@ -1,4 +1,4 @@
-#include "krylov.hpp"
+#include "cg.hpp"
 
 #include "span.hpp"
 #include "vector.hpp"

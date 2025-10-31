@@ -70,7 +70,6 @@ add_executable(poisson_1
   06_profiling/poisson_1/vector.cu
   06_profiling/poisson_1/poisson.cu
 )
-target_link_libraries(poisson_1 PUBLIC CUDA::cusparse)
 
 add_executable(poisson_2
   06_profiling/poisson_2/vector.cu
@@ -86,6 +85,7 @@ add_executable(poisson_4
   06_profiling/poisson_4/vector.cu
   06_profiling/poisson_4/poisson.cu
 )
+target_link_libraries(poisson_4 PUBLIC CUDA::cusparse)
 
 add_executable(poisson_5
   06_profiling/poisson_5/vector.cu

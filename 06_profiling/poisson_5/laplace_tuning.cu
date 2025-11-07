@@ -1,7 +1,4 @@
-#include "cg.hpp"
-
 #include "span.hpp"
-#include "vector.hpp"
 
 #include "timer.hpp"
 
@@ -36,39 +33,27 @@ int main() {
 
   int n = 256;
   int shape[3] = {n, n, n};
-  int max_iterations = 50;
-  double tolerance = 1.0e-5;
 
-  gpu::vector::set_memory_pool(n * n * n * sizeof(double) * 8);
+  double * d_input;
+  double * d_output;
 
-  auto A = [&](const gpu::vector & x){
-    gpu::vector Ax(x.size()); 
-
-    span3D<double> Ax_3D(Ax.ptr, shape);
-    span3D<double> x_3D(x.ptr, shape);
-
-    // assumes n is divisible by block dimensions, for simplicity
-    dim3 block{8, 8, 8};
-    dim3 grid{n / block.x, n / block.y, n / block.z};
-    laplace_operator<<< grid, block >>>(Ax_3D, x_3D);
-    //cudaDeviceSynchronize();
-
-    return Ax;
-  };
-  
-  // solution = 0 on the boundary, and we 
-  // have a Dirac delta source on the interior
-  std::vector<double> rhs(n * n * n, 0.0);
-  rhs[(n / 2) * n * n + (n / 2) * n + (n / 2)] = 1.0;
-  gpu::vector b = rhs;
+  cudaMalloc(&d_input, sizeof(double) * n * n * n);
+  cudaMalloc(&d_output, sizeof(double) * n * n * n);
+  cudaMemset(d_input, 0, n * n * n * sizeof(double));
 
   timer stopwatch;
 
   stopwatch.start();
-  gpu::vector x = cg(A, b, max_iterations, tolerance);
+  // assumes n is divisible by block dimensions, for simplicity
+  dim3 block{8, 8, 8};
+  dim3 grid{n / block.x, n / block.y, n / block.z};
+  laplace_operator<<< grid, block >>>(
+    span3D<double>{d_input, shape},
+    span3D<double>{d_output, shape}
+  );
   cudaDeviceSynchronize();
   stopwatch.stop();
 
-  std::cout << "finished in " << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
+  std::cout << block.x << "x" << block.y << "x" << block.z << ": " << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
 
 }

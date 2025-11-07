@@ -88,7 +88,11 @@ add_executable(poisson_4
 target_link_libraries(poisson_4 PUBLIC CUDA::cusparse)
 
 add_executable(laplace_tuning
-  06_profiling/poisson_5/laplace_tuning_sweep.cu
+  06_profiling/poisson_5/laplace_tuning.cu
+)
+
+add_executable(laplace_comparison
+  06_profiling/laplace_comparison/laplace_comparison.cu
 )
 
 add_executable(box_blur 06_profiling/box_blur/box_blur.cu)

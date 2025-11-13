@@ -10,9 +10,7 @@ static constexpr int kmax = 100000;
 
 template < typename callable, typename T >
 __global__ void kernel_template(callable f, T * data) {
-
     volatile T local = *data;
-    volatile T copy = local;
 
     for (int k = 0; k < kmax; k++) {
         local = f(local);

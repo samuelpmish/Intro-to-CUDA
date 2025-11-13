@@ -50,9 +50,10 @@ file(GLOB sources
   04_streams/*.cu
   05_bugs/*.cu
   06_profiling/unstructured_mesh/*.cu
-  06_profiling/laplace_comparison/*.cu
+  #06_profiling/laplace_comparison/*.cu
   06_profiling/bytes_in_flight/*.cu
   06_profiling/box_blur/*.cu
+  06_profiling/instruction_latencies/*.cu
 )
 
 foreach(filename ${sources})
@@ -62,6 +63,8 @@ endforeach()
 
 target_compile_options(host_device_annotations PUBLIC "--expt-relaxed-constexpr")
 target_compile_options(host_device_annotations PUBLIC "-extended-lambda")
+
+target_compile_options(instruction_latencies PUBLIC "-extended-lambda")
 
 add_executable(poisson_0
   06_profiling/poisson_0/vector.cu
@@ -91,7 +94,7 @@ add_executable(poisson_4
 target_link_libraries(poisson_4 PUBLIC CUDA::cusparse)
 
 add_executable(laplace_tuning
-  06_profiling/poisson_5/laplace_tuning.cu
+  06_profiling/poisson_5/laplace_tuning_sweep.cu
 )
 
 add_executable(poisson_5

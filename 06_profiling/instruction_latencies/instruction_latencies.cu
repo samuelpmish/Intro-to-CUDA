@@ -12,8 +12,8 @@ template < typename callable, typename T >
 __global__ void kernel_template(callable f, T * data) {
     volatile T local = *data;
 
-    for (int k = 0; k < kmax; k++) {
-        local = f(local);
+    for (int k = 0; k < kmax; k++) { 
+        local = f(local); 
     }
 
     if (threadIdx.x > 512) {

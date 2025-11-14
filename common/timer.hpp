@@ -25,3 +25,28 @@ double time(callable f, int n = 1) {
   stopwatch.stop();
   return stopwatch.elapsed();
 }
+
+#if __CUDACC__
+template < typename callable >
+float kernel_time_in_ms(callable f) {
+
+  cudaEvent_t start;
+  cudaEvent_t stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+
+  cudaEventRecord(start);
+  f();
+  cudaEventRecord(stop);
+  cudaEventSynchronize(stop);
+
+  float time_ms;
+  cudaEventElapsedTime(&time_ms, start, stop);
+
+  cudaEventDestroy(start);
+  cudaEventDestroy(stop);
+
+  return time_ms;
+
+}
+#endif

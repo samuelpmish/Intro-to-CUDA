@@ -54,6 +54,9 @@ file(GLOB sources
   06_profiling/bytes_in_flight/*.cu
   06_profiling/box_blur/*.cu
   06_profiling/instruction_latencies/*.cu
+  06_profiling/modified_axpy/*.cu
+  06_profiling/load_balancing/*.cu
+  06_profiling/csr_matrix/*.cu
 )
 
 foreach(filename ${sources})
@@ -65,6 +68,7 @@ target_compile_options(host_device_annotations PUBLIC "--expt-relaxed-constexpr"
 target_compile_options(host_device_annotations PUBLIC "-extended-lambda")
 
 target_compile_options(instruction_latencies PUBLIC "-extended-lambda")
+target_compile_options(function_approximation PUBLIC "-extended-lambda")
 
 add_executable(poisson_0
   06_profiling/poisson_0/vector.cu

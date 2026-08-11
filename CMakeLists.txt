@@ -26,7 +26,7 @@ find_package(CUDAToolkit)
 #add_compile_options("-v")
 
 # this flag enables kernel debugging 
-#add_compile_options("-G")
+#add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-G>)
 
 # this flag enables line of code associations 
 # from tools like compute-sanitizer
@@ -65,10 +65,10 @@ foreach(filename ${sources})
 endforeach()
 
 target_compile_options(host_device_annotations PUBLIC "--expt-relaxed-constexpr")
-target_compile_options(host_device_annotations PUBLIC "-extended-lambda")
+target_compile_options(host_device_annotations PUBLIC "--extended-lambda")
 
-target_compile_options(instruction_latencies PUBLIC "-extended-lambda")
-target_compile_options(function_approximation PUBLIC "-extended-lambda")
+target_compile_options(instruction_latencies PUBLIC "--extended-lambda")
+target_compile_options(function_approximation PUBLIC "--extended-lambda")
 
 add_executable(poisson_0
   06_profiling/poisson_0/vector.cu

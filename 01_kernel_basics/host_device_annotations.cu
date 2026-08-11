@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-// requires --extended-lambda flag
+// requires --expt-relaxed-constexpr flag
 constexpr double constexpr_function(double x) {
     return x * x;
 }

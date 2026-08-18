@@ -20,7 +20,7 @@ cusparseHandle_t handle = NULL;
 cusparseSpMatDescr_t matA;
 cusparseDnVecDescr_t vec_x, vec_y;
 double alpha = 1.0;
-double omega = 0.0; // TODO: conflicts with a declaration in cg.hpp
+double omega = 0.0;
 void * d_buffer = nullptr;
 size_t buffer_size = 0;
 

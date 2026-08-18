@@ -46,7 +46,7 @@ __global__ void sort_first(double * out, double * in, int * iterations) {
 
     int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
-    int iter = iterations[tid];
+    [[maybe_unused]] int iter = iterations[tid];
     double value = in[tid];
 
     // TODO: use cub::BlockRadixSort to sort the 

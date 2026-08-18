@@ -144,7 +144,10 @@ __global__ void axpby_kernel(double a, const double * x, double b, double * y, i
     // TODO: implement elementwise y[i] := a * x[i] + b * y[i]
 }
 
-void axpby(double a, const vector & x, double b, vector & y) {
+void axpby([[maybe_unused]] double a, 
+           [[maybe_unused]] const vector & x, 
+           [[maybe_unused]] double b, 
+           [[maybe_unused]] vector & y) {
     // TODO: launch axpby kernel with pointers taken from x, y
 }  
   

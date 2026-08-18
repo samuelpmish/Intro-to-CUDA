@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cinttypes>
 
+#include "error_checking.hpp"
+
 static constexpr int n = 10;
 
 void cpu_function(double * data) {
@@ -42,6 +44,8 @@ int main() {
 /******************************************************************************/
 
     // try accessing each of the memory buffers from the CPU and GPU -- what works and what doesn't?
+    gpu_kernel<<< 1, n >>>(h_data_malloc);
+    CUDA_CHECK(cudaDeviceSynchronize());
     
     // e.g. accessing malloc buffer from cpu_function
     cpu_function(h_data_malloc);

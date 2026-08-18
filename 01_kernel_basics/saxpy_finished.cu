@@ -3,13 +3,9 @@
 #include "timer.hpp"
 
 __global__ void saxpy(const float a, const float * x, float * y) {
-    //int i = threadIdx.x + blockIdx.x * blockDim.x;
-    int i = blockIdx.x + threadIdx.x * gridDim.x;
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    //int i = blockIdx.x + threadIdx.x * gridDim.x;
     y[i] = a * x[i] + y[i]; 
-    float tmp = x[i];
-    float tmp2 = y[i];
-    y[i] = a * tmp + tmp2;
-
 }
 
 int main() {

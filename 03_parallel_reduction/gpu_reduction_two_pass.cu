@@ -44,7 +44,7 @@ __global__ void final_reduce(int n, double * block_sum, double * pi_approx) {
     // shared storage used to communicate between threads
     extern __shared__ double shmem[]; 
 
-    double local_total = 0.0;
+    [[maybe_unused]] double local_total = 0.0;
     // first accumulate entries in local_total
     // TODO
 

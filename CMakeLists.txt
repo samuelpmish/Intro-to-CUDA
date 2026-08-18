@@ -37,7 +37,7 @@ find_package(CUDAToolkit)
 
 # this flag enables line of code associations 
 # from tools like compute-sanitizer
-add_compile_options("-lineinfo") 
+add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
 
 # these flags enable generation of detailed reports of 
 # where compilation time in spent in each translation unit
@@ -112,3 +112,16 @@ add_executable(poisson_5
   06_profiling/poisson_5/vector.cu
   06_profiling/poisson_5/poisson.cu
 )
+
+# uncomment lines below to enable a stricter compiler warnings for testing
+#
+# get_property(cuda_exercise_targets DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
+# foreach(target IN LISTS cuda_exercise_targets)
+#   target_compile_options(${target} PRIVATE
+#     "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic;-Werror>"
+#     # NVCC emits GCC-style line markers in generated host code, so forwarding
+#     # -Wpedantic would turn those tool-generated diagnostics into errors.
+#     "$<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:--Werror=all-warnings;-Xcompiler=-Wall,-Wextra,-Werror>"
+#     "$<$<COMPILE_LANG_AND_ID:CUDA,Clang>:-Wall;-Wextra;-Wpedantic;-Werror>"
+#   )
+# endforeach()

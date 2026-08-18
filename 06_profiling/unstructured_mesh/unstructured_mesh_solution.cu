@@ -20,7 +20,7 @@ timer stopwatch;
 
 void z_rotate_cpu(TriangleMesh & mesh) {
   stopwatch.start();
-  for (int i = 0; i < mesh.vertices.size(); i++) {
+  for (uint32_t i = 0; i < mesh.vertices.size(); i++) {
     vec3 v = mesh.vertices[i];
     mesh.vertices[i] = vec3{-v[1], v[0], v[2]};
   }
@@ -33,7 +33,7 @@ std::vector< vec3 > calculate_normals_cpu(const TriangleMesh & mesh) {
   std::vector< vec3 > normals(mesh.triangles.size());
 
   stopwatch.start();
-  for (int i = 0; i < mesh.triangles.size(); i++) {
+  for (uint32_t i = 0; i < mesh.triangles.size(); i++) {
     vec3i tri = mesh.triangles[i];
     vec3 v0 = mesh.vertices[tri[0]];
     vec3 v1 = mesh.vertices[tri[1]];

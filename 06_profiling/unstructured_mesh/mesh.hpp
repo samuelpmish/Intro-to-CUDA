@@ -109,11 +109,11 @@ TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
     static std::random_device rd;
     static std::mt19937 g(rd());
 
-    for (int i = 0; i < mesh.vertices.size(); i++) {
+    for (uint32_t i = 0; i < mesh.vertices.size(); i++) {
       vertex_permutation[i] = i;
     }
 
-    for (int i = 0; i < mesh.triangles.size(); i++) {
+    for (uint32_t i = 0; i < mesh.triangles.size(); i++) {
       triangle_permutation[i] = i;
     }
 
@@ -123,7 +123,7 @@ TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
   
   if (o == Ordering::MORTON) {
     std::vector< uint64_t > vertex_morton_codes(mesh.vertices.size());
-    for (int i = 0; i < mesh.vertices.size(); i++) {
+    for (uint32_t i = 0; i < mesh.vertices.size(); i++) {
       vec3 v = mesh.vertices[i];
       vertex_permutation[i] = i;
       vertex_morton_codes[i] = morton::encode(v[0], v[1], v[2]);
@@ -137,7 +137,7 @@ TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
     );
 
     std::vector< uint64_t > triangle_morton_codes(mesh.triangles.size());
-    for (int i = 0; i < mesh.triangles.size(); i++) {
+    for (uint32_t i = 0; i < mesh.triangles.size(); i++) {
       vec3i tri = mesh.triangles[i];
       vec3 c = mean(mesh.vertices[tri[0]], mesh.vertices[tri[1]], mesh.vertices[tri[2]]);
       triangle_permutation[i] = i;
@@ -154,11 +154,11 @@ TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
   }
 
   TriangleMesh output = mesh;
-  for (int i = 0; i < mesh.vertices.size(); i++) {
+  for (uint32_t i = 0; i < mesh.vertices.size(); i++) {
     output.vertices[vertex_permutation[i]] = mesh.vertices[i];
   }
 
-  for (int i = 0; i < mesh.triangles.size(); i++) {
+  for (uint32_t i = 0; i < mesh.triangles.size(); i++) {
     vec3i tri = mesh.triangles[triangle_permutation[i]];
     tri[0] = vertex_permutation[tri[0]];
     tri[1] = vertex_permutation[tri[1]];

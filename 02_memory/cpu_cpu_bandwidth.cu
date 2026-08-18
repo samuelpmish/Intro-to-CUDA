@@ -9,8 +9,8 @@ static constexpr int n = 10000000;
 
 int main() {
 
-    uint32_t num_iterations = 10;
-    uint32_t num_bytes = n * sizeof(double);
+    int num_iterations = 10;
+    int num_bytes = n * sizeof(double);
 
     std::vector< double > h_data[2] = {
         std::vector<double>(n),

@@ -23,7 +23,7 @@ __global__ void reduce(float * data, float * sum) {
   }
 }
  
-int main(int argc, char **argv) {
+int main() {
 
   float * d_data;
   cudaMalloc(&d_data, sizeof(float) * n);

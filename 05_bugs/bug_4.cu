@@ -9,7 +9,7 @@ __global__ void increment(float * data) {
   data[tid]++;
 }
  
-int main(int argc, char **argv) {
+int main() {
   int n = 64;
 
   float * d_data;

@@ -117,12 +117,12 @@ int main() {
     f5<<<1,1>>>(out, in, [] __device__ (double x) { return x * x; });
     cudaDeviceSynchronize();
 
-#if 0
     // ❌ host-instantiated object derived from virtual base in kernel 
     derived_class fn_obj;
     f6<<<1,1>>>(out, in, &fn_obj);
     cudaDeviceSynchronize();
 
+#if 1
     // ❌ host-instantiated, deep-copied object derived from virtual base in kernel  
     derived_class * d_fn_obj;
     cudaMalloc(&d_fn_obj, sizeof(derived_class));

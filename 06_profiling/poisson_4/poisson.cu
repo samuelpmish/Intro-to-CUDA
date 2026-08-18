@@ -20,7 +20,7 @@ cusparseHandle_t handle = NULL;
 cusparseSpMatDescr_t matA;
 cusparseDnVecDescr_t vec_x, vec_y;
 double alpha = 1.0;
-double beta = 0.0; // TODO: conflicts with a declaration in cg.hpp
+double omega = 0.0; // TODO: conflicts with a declaration in cg.hpp
 void * d_buffer = nullptr;
 size_t buffer_size = 0;
 
@@ -101,7 +101,7 @@ void initialize_CSR_matrix(int n) {
   // allocate an external buffer if needed
   CHECK_CUSPARSE(cusparseSpMV_bufferSize(
                                  handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                 &alpha, matA, vec_x, &beta, vec_y, CUDA_R_64F,
+                                 &alpha, matA, vec_x, &omega, vec_y, CUDA_R_64F,
                                  CUSPARSE_SPMV_ALG_DEFAULT, &buffer_size))
   cudaMalloc(&d_buffer, buffer_size);
 
@@ -146,7 +146,7 @@ int main() {
     CHECK_CUSPARSE(cusparseDnVecSetValues(vec_x, x.ptr));
     CHECK_CUSPARSE(cusparseDnVecSetValues(vec_y, Ax.ptr));
     CHECK_CUSPARSE(cusparseSpMV(handle, CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                 &alpha, matA, vec_x, &beta, vec_y, CUDA_R_64F,
+                                 &alpha, matA, vec_x, &omega, vec_y, CUDA_R_64F,
                                  CUSPARSE_SPMV_ALG_DEFAULT, d_buffer)); 
 
     return Ax;

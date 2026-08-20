@@ -30,7 +30,7 @@ __global__ void kernel(float * data, int n) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n) {
         // some expensive calculation
-        for (int k = 0; k < 1000; k++) {
+        for (int k = 0; k < 100; k++) {
             int id = (i + 128 * k) % n;
             data[id] = sin(data[id]);
         }

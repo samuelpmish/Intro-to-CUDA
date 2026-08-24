@@ -29,8 +29,10 @@ find_package(CUDAToolkit)
 
 # these flags turn on verbose output when compiling kernels
 # (e.g. register usage, shared memory footprint, etc)
-#add_compile_options("-Xptxas")
-#add_compile_options("-v")
+#add_compile_options(
+#  $<$<COMPILE_LANGUAGE:CUDA>:-Xptxas>
+#  $<$<COMPILE_LANGUAGE:CUDA>:-v>
+#)
 
 # this flag enables kernel debugging 
 #add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-G>)

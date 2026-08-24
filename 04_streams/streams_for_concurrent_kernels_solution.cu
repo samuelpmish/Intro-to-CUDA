@@ -16,43 +16,46 @@ __global__ void kernel(float * data, int n) {
 
 int main() {
 
-    int n = 1 << 12;
+    int n = 1 << 18;
     int num_buffers = 64;
-    int num_streams = 16;
+
+    std::cout << num_buffers << " buffers, each of size " << n << std::endl;
 
     std::vector< float * > d_data(num_buffers);
     for (int i = 0; i < num_buffers; i++) {
         cudaMalloc(&d_data[i], n * sizeof(float));
     }
 
-    std::vector< cudaStream_t > stream(num_streams);
-    for (int i = 0; i < num_streams; i++) {
-        cudaStreamCreate(&stream[i]);
-    }
-
-    timer stopwatch;
-
-    stopwatch.start();
-    {
-        int block = 256;
-        int grid = n / block;
-
-        for (int i = 0; i < num_buffers; i++) {
-            kernel<<< grid, block, 0, stream[i % num_streams] >>>(d_data[i], n);
+    for (int num_streams = 1; num_streams < 16; num_streams++) {
+        std::vector< cudaStream_t > stream(num_streams);
+        for (int i = 0; i < num_streams; i++) {
+            cudaStreamCreate(&stream[i]);
         }
 
-        cudaDeviceSynchronize();
-    }
-    stopwatch.stop();
+        timer stopwatch;
 
-    std::cout << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
+        stopwatch.start();
+        {
+            int block = 256;
+            int grid = n / block;
 
-    for (int i = 0; i < num_streams; i++) {
-        cudaStreamDestroy(stream[i]);
+            for (int i = 0; i < num_buffers; i++) {
+                kernel<<< grid, block, 0, stream[i % num_streams] >>>(d_data[i], n);
+            }
+
+            cudaDeviceSynchronize();
+        }
+        stopwatch.stop();
+
+        std::cout << num_streams << " streams: " << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
+
+        for (int i = 0; i < num_streams; i++) {
+            cudaStreamDestroy(stream[i]);
+        }
+
     }
 
     for (int i = 0; i < num_buffers; i++) {
         cudaFree(d_data[i]);
     }
-
 }

@@ -18,9 +18,6 @@ int main() {
 
     int kmax = 100;
     int n = 1 << 24;
-    int num_streams = 16;
-
-    int chunk_size = n / num_streams;
 
     float * h_data;
     float * d_data;
@@ -32,45 +29,52 @@ int main() {
         h_data[i] = i;
     }
 
-    std::vector< cudaStream_t > stream(num_streams);
-    for (int i = 0; i < num_streams; i++) {
-        cudaStreamCreate(&stream[i]);
-    }
+    for (int num_streams = 1; num_streams < 16; num_streams++) {
 
-    timer stopwatch;
+        int chunk_size = n / num_streams;
 
-    stopwatch.start();
+        std::vector< cudaStream_t > stream(num_streams);
+        for (int i = 0; i < num_streams; i++) {
+            //cudaStreamCreate(&stream[i]);
+            cudaStreamCreateWithFlags(&stream[i], cudaStreamNonBlocking);
+        }
 
-    // asynchronously transfer H2D, launch a kernel, and transfer D2H
-    for (int i = 0; i < num_streams; i++) {
+        timer stopwatch;
 
-        int offset = i * (n / num_streams);
-        cudaMemcpyAsync(d_data + offset, 
-                        h_data + offset, 
-                        chunk_size * sizeof(float),
-                        cudaMemcpyHostToDevice, 
-                        stream[i]);
+        stopwatch.start();
 
-        int block = 256;
-        int grid = chunk_size / block;
-        kernel<<< grid, block, 0, stream[i]>>>(d_data + offset, chunk_size, kmax);
+        // asynchronously transfer H2D, launch a kernel, and transfer D2H
+        for (int i = 0; i < num_streams; i++) {
 
-        cudaMemcpyAsync(h_data + offset, 
-                        d_data + offset, 
-                        chunk_size * sizeof(float),
-                        cudaMemcpyDeviceToHost, 
-                        stream[i]);
+            int offset = i * (n / num_streams);
+            cudaMemcpyAsync(d_data + offset, 
+                            h_data + offset, 
+                            chunk_size * sizeof(float),
+                            cudaMemcpyHostToDevice, 
+                            stream[i]);
 
-    }
+            int block = 256;
+            int grid = chunk_size / block;
+            kernel<<< grid, block, 0, stream[i]>>>(d_data + offset, chunk_size, kmax);
 
-    cudaDeviceSynchronize();
+            cudaMemcpyAsync(h_data + offset, 
+                            d_data + offset, 
+                            chunk_size * sizeof(float),
+                            cudaMemcpyDeviceToHost, 
+                            stream[i]);
 
-    stopwatch.stop();
+        }
 
-    std::cout << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
+        cudaDeviceSynchronize();
 
-    for (int i = 0; i < num_streams; i++) {
-        cudaStreamDestroy(stream[i]);
+        stopwatch.stop();
+
+        std::cout << num_streams << " streams: " << stopwatch.elapsed() * 1000.0f << " ms" << std::endl;
+
+        for (int i = 0; i < num_streams; i++) {
+            cudaStreamDestroy(stream[i]);
+        }
+
     }
 
     cudaFree(d_data);

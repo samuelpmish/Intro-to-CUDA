@@ -115,6 +115,8 @@ add_executable(poisson_5
   06_profiling/poisson_5/poisson.cu
 )
 
+add_executable(nvtx_example 06_profiling/nvtx_example.cu)
+
 # uncomment lines below to enable a stricter compiler warnings for testing
 #
 # get_property(cuda_exercise_targets DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)

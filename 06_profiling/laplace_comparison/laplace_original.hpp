@@ -18,7 +18,7 @@ __global__ void laplace_original(T * out, const T * in, int nx, int ny, int nz){
     out[id(i,j,k)] = in[id(i  , j  , k-1)]
                    + in[id(i  , j-1, k  )]
                    + in[id(i-1, j  , k  )]
-                   - in[id(i  , j  , k  )] * (6.0)
+                   - in[id(i  , j  , k  )] * T(6.0)
                    + in[id(i+1, j  , k  )]
                    + in[id(i  , j+1, k  )]
                    + in[id(i  , j  , k+1)];

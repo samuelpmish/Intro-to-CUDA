@@ -9,6 +9,7 @@
 #include "error_checking.hpp"
 
 #include "laplace_original.hpp"
+#include "laplace_scatter.hpp"
 #include "laplace_vectorized.hpp"
 #include "laplace_tiled.hpp"
 
@@ -115,6 +116,14 @@ void run_tests(int n, int num_iterations, std::array<uint32_t,3> blocksz, bool p
   entries.push_back({"original", time_kernel_ms([&](){
     dim3 grid = make_grid(n, block.x, block.y, block.z);
     laplace_original<<<grid, block>>>(d_out, d_in, n, n, n);
+  })});
+
+////////////////////////////////////////////////////////////////////////////////
+
+  entries.push_back({"scatter", time_kernel_ms([&](){
+    cudaMemset(d_out, 0, num_elements * sizeof(T)); // scatter accumulates into d_out
+    dim3 grid = make_grid(n, block.x, block.y, block.z);
+    laplace_scatter<<<grid, block>>>(d_out, d_in, n, n, n);
   })});
 
 ////////////////////////////////////////////////////////////////////////////////

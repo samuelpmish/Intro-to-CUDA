@@ -57,9 +57,16 @@ int main() {
     dim3{1,4,128}
   };
 
+
   for (dim3 block : blocks) {
-    stopwatch.start();
     dim3 grid{n / block.x, n / block.y, n / block.z};
+    laplace_operator<<< grid, block >>>(
+      span3D<double>{d_input, shape},
+      span3D<double>{d_output, shape}
+    );
+    cudaDeviceSynchronize();
+
+    stopwatch.start();
     for (int k = 0; k < num_runs; k++) {
       laplace_operator<<< grid, block >>>(
         span3D<double>{d_input, shape},

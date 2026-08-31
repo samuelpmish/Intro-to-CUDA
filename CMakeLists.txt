@@ -59,7 +59,7 @@ file(GLOB sources
   04_streams/*.cu
   05_bugs/*.cu
   06_profiling/unstructured_mesh/*.cu
-  #06_profiling/laplace_comparison/*.cu
+  06_profiling/laplace_comparison/*.cu
   06_profiling/bytes_in_flight/*.cu
   06_profiling/box_blur/*.cu
   06_profiling/instruction_latencies/*.cu

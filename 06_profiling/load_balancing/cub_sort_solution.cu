@@ -103,6 +103,11 @@ int main() {
     cudaMemcpy(d_iterations, &h_iterations[0], sizeof(int) * n, cudaMemcpyHostToDevice);
     cudaMemcpy(d_in, &h_values[0], sizeof(double) * n, cudaMemcpyHostToDevice);
 
+    // don't time the first launch
+    unbalanced<<< 1, block >>>(d_out, d_in, d_iterations);
+    sort_first<<< 1, block >>>(d_out, d_in, d_iterations);
+    cudaDeviceSynchronize();
+
     float unbalanced_time_ms = kernel_time_in_ms([&](){
         int grid = n / block;
         unbalanced<<< grid, block >>>(d_out, d_in, d_iterations);

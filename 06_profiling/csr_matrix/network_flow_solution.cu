@@ -53,6 +53,10 @@ int main() {
 
     cudaMemcpy(d_edges, &h_edges[0], sizeof(Edge) * num_arcs, cudaMemcpyHostToDevice);
 
+    // don't time the first launch
+    emit_coo_values<<< 1, 256 >>>(d_coo_rows, d_coo_cols, d_coo_values, d_edges, 0);
+    cudaDeviceSynchronize();
+
     float time_ms = kernel_time_in_ms([&](){
         int block = 256;
         int grid = (num_arcs + block - 1) / block;

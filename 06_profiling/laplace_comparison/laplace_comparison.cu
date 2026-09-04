@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <algorithm>
+#include <type_traits>
 
 #include "parse.hpp"
 #include "chunk.hpp"
@@ -14,7 +15,10 @@
 #include "laplace_tiled.hpp"
 
 template < int m >
-struct constexpr_int { constexpr operator int() { return m; } };
+struct constexpr_int {
+  static constexpr int value = m;
+  constexpr operator int() const { return m; }
+};
 
 dim3 make_grid(uint32_t n, uint32_t bx, uint32_t by, uint32_t bz) {
   return dim3{
@@ -129,10 +133,11 @@ void run_tests(int n, int num_iterations, std::array<uint32_t,3> blocksz, bool p
 ////////////////////////////////////////////////////////////////////////////////
 
   auto vectorized_entry = [&](auto mx){
-    std::string label = std::string("vectorized") + std::to_string(mx); 
+    using MX = std::decay_t<decltype(mx)>;
+    std::string label = std::string("vectorized") + std::to_string(MX::value); 
     float time_ms = time_kernel_ms([&](){
-      dim3 grid = make_grid(n, block.x * mx, block.y, block.z);
-      laplace_vectorized<mx><<<grid, block>>>(d_out, d_in, n, n, n);
+      dim3 grid = make_grid(n, block.x * MX::value, block.y, block.z);
+      laplace_vectorized<MX::value><<<grid, block>>>(d_out, d_in, n, n, n);
     });
 
     return entry{label, time_ms};
@@ -144,10 +149,13 @@ void run_tests(int n, int num_iterations, std::array<uint32_t,3> blocksz, bool p
 ////////////////////////////////////////////////////////////////////////////////
 
   auto tiled_entry = [&](auto mx, auto my, auto mz){
-    std::string label = std::string("tiled") + std::to_string(mx) + "x" + std::to_string(my) + "x" + std::to_string(mz); 
+    using MX = std::decay_t<decltype(mx)>;
+    using MY = std::decay_t<decltype(my)>;
+    using MZ = std::decay_t<decltype(mz)>;
+    std::string label = std::string("tiled") + std::to_string(MX::value) + "x" + std::to_string(MY::value) + "x" + std::to_string(MZ::value); 
     float time_ms = time_kernel_ms([&](){
-      dim3 grid = make_grid(n, block.x * mx, block.y * my, block.z * mz);
-      laplace_tiled_3D<mx, my, mz><<<grid, block>>>(d_out, d_in, n, n, n);
+      dim3 grid = make_grid(n, block.x * MX::value, block.y * MY::value, block.z * MZ::value);
+      laplace_tiled_3D<MX::value, MY::value, MZ::value><<<grid, block>>>(d_out, d_in, n, n, n);
     });
 
     return entry{label, time_ms};

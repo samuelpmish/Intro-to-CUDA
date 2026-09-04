@@ -46,7 +46,7 @@ __global__ void sort_first(double * out, double * in, int * iterations) {
 
     int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
-    [[maybe_unused]] int iter = iterations[tid];
+    int iter = iterations[tid];
     double value = in[tid];
 
     // TODO: use cub::BlockRadixSort to sort the 
@@ -54,6 +54,10 @@ __global__ void sort_first(double * out, double * in, int * iterations) {
     //       within a warp perform a similar amount of work
     // 
     // Let's use this: https://nvidia.github.io/cccl/cub/api/classcub_1_1BlockRadixSort.html#_CPPv4N3cub14BlockRadixSort4SortERA14ItemsPerThread_4KeyTRA14ItemsPerThread_6ValueTii
+
+    for (int i = 0; i < iter; i++) {
+        value = sin(value);
+    }
 
     // shared reduction
     shmem[threadIdx.x] = value;
@@ -94,6 +98,11 @@ int main() {
 
     cudaMemcpy(d_iterations, &h_iterations[0], sizeof(int) * n, cudaMemcpyHostToDevice);
     cudaMemcpy(d_in, &h_values[0], sizeof(double) * n, cudaMemcpyHostToDevice);
+
+    // don't time the first launch: it includes one-time module load latency
+    unbalanced<<< 1, block >>>(d_out, d_in, d_iterations);
+    sort_first<<< 1, block >>>(d_out, d_in, d_iterations);
+    cudaDeviceSynchronize();
 
     float unbalanced_time_ms = kernel_time_in_ms([&](){
         int grid = n / block;

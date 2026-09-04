@@ -83,7 +83,18 @@ __global__ void laplace_tiled_3D(T * out, const T * in, int nx, int ny, int nz) 
 
         }
 
-        if(0 < dk && 0 <= dj && dj < my && 0 < j && j < ny-1) {
+        // the `1 < k` term keeps the z boundary plane (k-1 == 0) untouched,
+        // to match the boundary treatment of laplace_original
+        if(0 < dk && 1 < k && 0 <= dj && dj < my && 0 < j && j < ny-1) {
+          // laplace_original does not touch the x boundary, so this kernel must
+          // not change it either.  Rather than branching to a scalar store (which
+          // splits the warp holding the edge chunk, and costs ~6%), put the value
+          // that is already there back into the edge lanes and keep one wide store
+          // on every path.  Each output cell has exactly one writer, so this is a
+          // no-op.
+          if (i0    == 0)  { tmp[1-dkm2][dj][0]    = out[id(0,    j, k-1)]; }
+          if (i0+mx >= nx) { tmp[1-dkm2][dj][mx-1] = out[id(nx-1, j, k-1)]; }
+
           // write out completed values
           aligned_store_chunk(&out[id(i0, j, k-1)], tmp[1-dkm2][dj]);
         }

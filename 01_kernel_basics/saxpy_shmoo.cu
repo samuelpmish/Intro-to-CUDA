@@ -24,6 +24,10 @@ for (int threads_per_block = 4; threads_per_block <= 1024; threads_per_block <<=
     cudaMalloc(&x, sizeof(float) * n);
     cudaMalloc(&y, sizeof(float) * n);
 
+    // don't time the first launch
+    saxpy<<< 1, threads_per_block >>>(a, x, y);
+    cudaDeviceSynchronize();
+
     timer stopwatch;
 
     stopwatch.start();

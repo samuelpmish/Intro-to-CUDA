@@ -52,8 +52,8 @@ int main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    // fp32
-    std::vector< double > h_f64(32, 0.9f);
+    // fp64
+    std::vector< double > h_f64(32, 0.9);
     cudaMemcpy(d_f64, &h_f64[0], 32 * sizeof(double), cudaMemcpyHostToDevice);
 
     std::cout << std::setw(32) << "f(x): " << runtime_ms(

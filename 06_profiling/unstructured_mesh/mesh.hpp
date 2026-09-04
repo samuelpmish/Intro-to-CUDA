@@ -28,11 +28,11 @@ struct ivec_hash {
   }   
 };
 
-vec3 mean(vec3 x, vec3 y) {
+inline vec3 mean(vec3 x, vec3 y) {
   return vec3{0.5 * (x[0] + y[0]), 0.5 * (x[1] + y[1]), 0.5 * (x[2] + y[2])};
 }
 
-vec3 mean(vec3 u, vec3 v, vec3 w) {
+inline vec3 mean(vec3 u, vec3 v, vec3 w) {
   constexpr double one_third = 1.0 / 3.0;
   return vec3{
     one_third * (u[0] + v[0] + w[0]), 
@@ -46,7 +46,7 @@ struct TriangleMesh {
   std::vector<vec3i> triangles;
 };
 
-TriangleMesh subdivide(TriangleMesh & mesh) {
+inline TriangleMesh subdivide(TriangleMesh & mesh) {
   TriangleMesh output{};
   output.triangles.reserve(4 * mesh.triangles.size());
 
@@ -80,7 +80,7 @@ TriangleMesh subdivide(TriangleMesh & mesh) {
   return output;
 }
 
-TriangleMesh icosphere(int subdivision) {
+inline TriangleMesh icosphere(int subdivision) {
   vec3 icosahedron_vertices[12] = {{0., 0., -1.}, {0., 0., 1.}, {-0.894427, 0., -0.447214}, {0.894427, 0., 0.447214}, {0.723607, -0.525731, -0.447214}, {0.723607, 0.525731, -0.447214}, {-0.723607, -0.525731, 0.447214}, {-0.723607, 0.525731, 0.447214}, {-0.276393, -0.850651, -0.447214}, {-0.276393, 0.850651, -0.447214}, {0.276393, -0.850651, 0.447214}, {0.276393, 0.850651, 0.447214}};
   vec3i icosahedron_triangles[20] = {{5, 3, 4}, {3, 5, 11}, {10, 8, 4}, {8, 10, 6}, {1, 10, 3}, {1, 3, 11}, {9, 5, 0}, {5, 4, 0}, {9, 0, 2}, {0, 8, 2}, {2, 7, 9}, {7, 2, 6}, {11, 7, 1}, {1, 7, 6}, {0, 4, 8}, {2, 8, 6}, {3, 10, 4}, {10, 1, 6}, {9, 11, 5}, {11, 9, 7}};
 
@@ -100,7 +100,7 @@ TriangleMesh icosphere(int subdivision) {
 
 enum Ordering { RANDOMIZED, MORTON };
 
-TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
+inline TriangleMesh renumber(const TriangleMesh & mesh, Ordering o) {
 
   std::vector< int > vertex_permutation(mesh.vertices.size());
   std::vector< int > triangle_permutation(mesh.triangles.size());

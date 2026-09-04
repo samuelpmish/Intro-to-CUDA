@@ -3,11 +3,9 @@
 template < typename T >
 __global__ void laplace_original(T * out, const T * in, int nx, int ny, int nz){
 
-#ifndef ID_MACRO
   auto id = [nx, ny](int ix, int iy, int iz) {
     return ix + nx * (iy + ny * iz);
   };
-#endif
 
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int j = threadIdx.y + blockIdx.y * blockDim.y;

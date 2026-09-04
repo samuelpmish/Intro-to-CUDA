@@ -1,6 +1,9 @@
+#pragma once
+
 #include <array>
 #include <cstddef>
 #include <iterator>
+#include <stdexcept>
 #include <algorithm>
 
 template <typename T>

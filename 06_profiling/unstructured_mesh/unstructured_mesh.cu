@@ -1,5 +1,3 @@
-// exercise: start by 
-
 #include <unordered_map>
 #include <array>
 #include <vector>

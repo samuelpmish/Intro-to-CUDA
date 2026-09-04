@@ -30,7 +30,7 @@ __global__ void calculate_pi(int n, double * block_sum){
             shmem[threadIdx.x] += shmem[threadIdx.x + stride];
         }
         if (stride <= 16) {
-            //__syncwarp();
+            __syncwarp();
         } else {
             __syncthreads();
         }

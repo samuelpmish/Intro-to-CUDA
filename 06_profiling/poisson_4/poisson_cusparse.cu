@@ -161,6 +161,7 @@ void cleanup() {
   cudaFree(d_values);
   cudaFree(d_x);
   cudaFree(d_y);
+  cudaFree(d_buffer);
 
 }
 

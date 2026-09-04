@@ -142,5 +142,6 @@ int main() {
     cudaFree(d_coo_rows);
     cudaFree(d_coo_cols);
     cudaFree(d_coo_values);
+    cudaFree(d_resistors);
 
 }

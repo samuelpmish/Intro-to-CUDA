@@ -63,7 +63,6 @@ file(GLOB sources
   06_profiling/bytes_in_flight/*.cu
   06_profiling/box_blur/*.cu
   06_profiling/instruction_latencies/*.cu
-  06_profiling/modified_axpy/*.cu
   06_profiling/load_balancing/*.cu
   06_profiling/csr_matrix/*.cu
 )
@@ -83,7 +82,6 @@ add_executable(poisson_0
   06_profiling/poisson_0/vector.cu
   06_profiling/poisson_0/poisson.cu
 )
-target_link_libraries(poisson_0 PUBLIC CUDA::cusparse)
 
 add_executable(poisson_1
   06_profiling/poisson_1/vector.cu
@@ -106,7 +104,17 @@ add_executable(poisson_4
 )
 target_link_libraries(poisson_4 PUBLIC CUDA::cusparse)
 
+add_executable(poisson_4_cusparse
+  06_profiling/poisson_4/vector.cu
+  06_profiling/poisson_4/poisson_cusparse.cu
+)
+target_link_libraries(poisson_4_cusparse PUBLIC CUDA::cusparse)
+
 add_executable(laplace_tuning
+  06_profiling/poisson_5/laplace_tuning.cu
+)
+
+add_executable(laplace_tuning_sweep
   06_profiling/poisson_5/laplace_tuning_sweep.cu
 )
 

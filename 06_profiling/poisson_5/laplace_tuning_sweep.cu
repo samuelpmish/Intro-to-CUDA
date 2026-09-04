@@ -79,4 +79,7 @@ int main() {
     std::cout << block.x << "x" << block.y << "x" << block.z << ": " << stopwatch.elapsed() * 1000.0f / num_runs << " ms" << std::endl;
   }
 
+  cudaFree(d_input);
+  cudaFree(d_output);
+
 }

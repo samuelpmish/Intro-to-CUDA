@@ -105,5 +105,6 @@ int main() {
     std::cout << "computed pi ≈ " << pi_approx << " in " << time_ms << " ms, error " << fabs(pi - pi_approx) << std::endl;
 
     cudaFree(d_pi_approx);
+    cudaFree(d_storage);
 
 }

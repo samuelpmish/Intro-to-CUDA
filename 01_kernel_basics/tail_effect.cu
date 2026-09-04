@@ -19,6 +19,9 @@ float run_test(int num_blocks) {
     float duration;
     cudaEventElapsedTime(&duration, start, stop);
 
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+
     return duration;
 }
 

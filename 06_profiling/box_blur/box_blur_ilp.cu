@@ -70,4 +70,7 @@ int main() {
   cudaEventDestroy(start);
   cudaEventDestroy(stop);
 
+  cudaFree(d_in);
+  cudaFree(d_out);
+
 }

@@ -184,6 +184,9 @@ double dot(const vector & u, const vector & v) {
     double h_sum;
     cudaMemcpy(&h_sum, d_sum, sizeof(double), cudaMemcpyDeviceToHost);
 
+    cudaFree(d_block_sums);
+    cudaFree(d_sum);
+
     return h_sum;
 }
 

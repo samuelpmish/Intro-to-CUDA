@@ -274,7 +274,7 @@ __host__ __device__ constexpr auto normalize(const vec< dim, T > & v) {
 
 template < uint32_t dim, typename S, typename T >
 __host__ __device__ constexpr auto dot(const vec< dim, S > & u, const vec< dim, T > & v) {
-  decltype(S{} / T{}) total{};
+  decltype(S{} * T{}) total{};
   for (uint32_t i = 0; i < dim; i++) {
     total += u[i] * v[i];
   }

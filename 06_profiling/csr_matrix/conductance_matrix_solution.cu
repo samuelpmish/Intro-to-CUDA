@@ -49,12 +49,12 @@ __global__ void emit_coo_values(int * row, int * col, double * values, const Res
         // S_21
         row[4 * tid + 2] = R.node[1];
         col[4 * tid + 2] = R.node[0];
-        values[4 * tid + 2] = 1.0 / R.resistance;
+        values[4 * tid + 2] = -1.0 / R.resistance;
 
         // S_22
         row[4 * tid + 3] = R.node[1];
         col[4 * tid + 3] = R.node[1];
-        values[4 * tid + 3] = -1.0 / R.resistance;
+        values[4 * tid + 3] = 1.0 / R.resistance;
     }
 
 }

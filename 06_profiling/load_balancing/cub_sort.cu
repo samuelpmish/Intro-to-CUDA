@@ -79,7 +79,7 @@ __global__ void sort_first(double * out, double * in, int * iterations) {
 
 int main() {
 
-    int n = 1 << 22;
+    int n = 1 << 24;
 
     int * d_iterations;
     double * d_in;

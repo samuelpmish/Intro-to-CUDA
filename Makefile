@@ -15,7 +15,6 @@ CUDA_SOURCES := \
   $(wildcard 06_profiling/unstructured_mesh/*.cu) \
   $(wildcard 06_profiling/laplace_comparison/*.cu) \
   $(wildcard 06_profiling/bytes_in_flight/*.cu) \
-  $(wildcard 06_profiling/box_blur/*.cu) \
   $(wildcard 06_profiling/instruction_latencies/*.cu) \
   $(wildcard 06_profiling/load_balancing/*.cu) \
   $(wildcard 06_profiling/csr_matrix/*.cu)

@@ -78,12 +78,11 @@ __global__ void sort_first(double * out, double * in, int * iterations) {
         out[blockIdx.x] = shmem[0]; 
     }
 
-    out[tid] = value[0];
 }
 
 int main() {
 
-    int n = 1 << 22;
+    int n = 1 << 24;
 
     int * d_iterations;
     double * d_in;

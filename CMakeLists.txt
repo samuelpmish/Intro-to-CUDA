@@ -61,7 +61,6 @@ file(GLOB sources
   06_profiling/unstructured_mesh/*.cu
   06_profiling/laplace_comparison/*.cu
   06_profiling/bytes_in_flight/*.cu
-  06_profiling/box_blur/*.cu
   06_profiling/instruction_latencies/*.cu
   06_profiling/load_balancing/*.cu
   06_profiling/csr_matrix/*.cu

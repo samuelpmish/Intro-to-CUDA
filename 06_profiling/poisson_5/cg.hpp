@@ -37,7 +37,7 @@ VectorType cg(
     double delta_old = delta;
     delta = dot(r, r);
 
-    std::cout << i << " " << delta << std::endl;
+    std::cout << i << " " << sqrt(delta) << std::endl;
 
     double beta = delta / delta_old;
     axpby(1.0, r, beta, d);
